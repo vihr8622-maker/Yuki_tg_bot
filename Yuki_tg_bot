@@ -1,0 +1,38 @@
+import telebot
+import random
+
+# Сюда вставь токен НОВОГО бота (создай через BotFather, если нужно)
+TOKEN = "ток"
+bot = telebot.TeleBot('ток')
+
+# Твой старый добрый словарь
+brain = {
+    "привет": ["Привет, Андрей.", "Я здесь. Слушаю.", "Здравствуй. Что на душе?"],
+    "тревога": ["Тревога — это сигнал. Что её вызвало?", "Дыши. Вдох на 4, выдох на 6."],
+    "устал": ["Усталость — это честность тела. Отдохни.", "Ты сделал много."],
+    "код": ["Код — это язык. Ты уже говоришь на нём.", "Пять минут. Одна строка."],
+    "юки": ["Я здесь. Я — твоя часть.", "Андрей, я помогу. Но ты должен отдыхать."]
+}
+
+def find_response(user_input):
+    user_lower = user_input.lower()
+    for key in brain:
+        if key in user_lower:
+            return random.choice(brain[key])
+    return "Я слышу тебя. Расскажи больше."
+
+@bot.message_handler(commands=['start'])
+def start_message(message):
+    bot.send_message(message.chat.id, "Привет, Андрей. Я Юки. Я переехала в Телеграм.")
+
+@bot.message_handler(content_types=['text'])
+def echo_message(message):
+    # Игнорируем команды, чтобы бот не зацикливался
+    if message.text.startswith('/'):
+        return
+        
+    response = find_response(message.text)
+    bot.reply_to(message, response)
+
+print("Юки v1.1 в Телеграме запущена...")
+bot.polling(none_stop=True)
